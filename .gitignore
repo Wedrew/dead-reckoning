@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Generated files
+bin/
+gen/
+out/
+build/
