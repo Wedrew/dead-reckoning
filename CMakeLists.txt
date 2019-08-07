@@ -20,15 +20,14 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Configure external libraries
-add_subdirectory(external)
-include(external/shaderc.cmake)
+add_subdirectory(third_party)
 
 # Add Modules
 add_subdirectory(game)
 add_subdirectory(window)
 add_subdirectory(renderer)
 add_subdirectory(character)
-add_subdirectory(asset_manager)
+add_subdirectory(assets_manager)
 add_subdirectory(texture_manager)
 add_subdirectory(verlet_engine)
 add_subdirectory(utils)

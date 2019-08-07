@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "utils/utils.hpp"
-#include "shaderc/shaderc.hpp"
+//#include "shaderc/shaderc.hpp"
 
 using fileMap = std::map<std::string, std::filesystem::path>;
 
