@@ -20,8 +20,8 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation")
 set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "Enable C++ 17")
 
 # Shaderc specific settings
-set(SPIRV_HEADERS_SKIP_EXAMPLES ON CACHE BOOL "Skip building SPIR-V header examples")
-set(SHADERC_ENABLE_SPVC ON CACHE BOOL "Build SPVC command line wrapper")
+#set(SPIRV_HEADERS_SKIP_EXAMPLES ON CACHE BOOL "Skip building SPIR-V header examples")
+#set(SHADERC_ENABLE_SPVC ON CACHE BOOL "Build SPVC command line wrapper")
 
 # Spdlog specific settings
 # set()
@@ -43,19 +43,19 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     endif()
 
     # Sync shaderc git dependencies
-    execute_process(COMMAND ${CHECKOUT_SPIRV_TOOLS_SH}
-                    WORKING_DIRECTORY ${SPIRV_CROSS_PATH})
+    #execute_process(COMMAND ${CHECKOUT_SPIRV_TOOLS_SH}
+                    #WORKING_DIRECTORY ${SPIRV_CROSS_PATH})
 
-    execute_process(COMMAND ${BUILD_SPIRV_TOOLS_SH}
-                    WORKING_DIRECTORY ${SPIRV_CROSS_PATH})
+    #execute_process(COMMAND ${BUILD_SPIRV_TOOLS_SH}
+                    #WORKING_DIRECTORY ${SPIRV_CROSS_PATH})
 
     execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/third_party/shaderc/utils/git-sync-deps 
                     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
     # Add all the newely synced cmake projects
+    #add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/shaderc")
     add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/glfw")
     add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/glm")
-    add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/shaderc")
     add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/spdlog")
     add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/json")
     add_subdirectory("${CMAKE_SOURCE_DIR}/third_party/cxxopts")
