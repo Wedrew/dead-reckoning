@@ -22,6 +22,16 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 # Configure external libraries
 add_subdirectory(third_party)
 
+# Add all the newely synced cmake projects
+add_subdirectory(third_party/shaderc/src)
+add_subdirectory(third_party/glfw)
+add_subdirectory(third_party/glm)
+add_subdirectory(third_party/spdlog)
+add_subdirectory(third_party/json)
+add_subdirectory(third_party/cxxopts)
+
+include_directories(${shaderc_SOURCE_DIR}/libshaderc/include)
+
 # Add Modules
 add_subdirectory(game)
 add_subdirectory(window)
