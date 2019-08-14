@@ -12,6 +12,9 @@ namespace zero {
 
 Renderer::Renderer(std::string title) : title(title) {
     rendererLogger->debug("Created Renderer object");
+
+    shaders.compileShaders(true);
+
 }
 
 Renderer::~Renderer() {

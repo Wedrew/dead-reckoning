@@ -13,10 +13,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Submodule settings
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the GLFW as shared library")
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation")
+set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "Enable C++ 17")
+set(SPIRV_HEADERS_SKIP_EXAMPLES ON CACHE BOOL "Skip building SPIR-V header examples")
+set(SKIP_SPIRV_TOOLS_INSTALL ON CACHE BOOL "Skip building SPIR-V tools")
+set(SPIRV_SKIP_TESTS ON CACHE BOOL "Skip building SPIR-V tests")
+set(SKIP_GLSLANG_INSTALL OFF CACHE BOOL "Skip glsland install")
+#set(SHADERC_ENABLE_SPVC ON CACHE BOOL "Build SPVC command line wrapper")
+set(JSON_BuildTests OFF CACHE BOOL "Build third party library tests")
+set(JSON_Install OFF CACHE BOOL "Install library")
+
 project(zero)
 
 find_package(Vulkan REQUIRED FATAL_ERROR)
 
+# TODO: Rework this to do target level includes
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Configure external libraries
@@ -30,7 +45,6 @@ add_subdirectory(third_party/spdlog)
 add_subdirectory(third_party/json)
 add_subdirectory(third_party/cxxopts)
 
-include_directories(${shaderc_SOURCE_DIR}/libshaderc/include)
 
 # Add Modules
 add_subdirectory(game)

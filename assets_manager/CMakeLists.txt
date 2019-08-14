@@ -1,5 +1,5 @@
 add_library(assets_manager assets_manager.cpp assets_manager.hpp)
 shaderc_default_compile_options(assets_manager)
-target_include_directories(assets_manager PUBLIC ${CMAKE_SOURCE_DIR}/third_party/shaderc/src/libshaderc/include)
+include_directories(${shaderc_SOURCE_DIR}/libshaderc/include)
 #target_include_directories(assets_manager PUBLIC ${shaderc_SOURCE_DIR}/libshaderc/include)
 target_link_libraries(assets_manager PRIVATE shaderc stdc++fs utils)
