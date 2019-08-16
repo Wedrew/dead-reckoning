@@ -23,7 +23,7 @@ set(SPIRV_HEADERS_SKIP_EXAMPLES ON CACHE BOOL "Skip building SPIR-V header examp
 set(SKIP_SPIRV_TOOLS_INSTALL ON CACHE BOOL "Skip building SPIR-V tools")
 set(SPIRV_SKIP_TESTS ON CACHE BOOL "Skip building SPIR-V tests")
 set(SKIP_GLSLANG_INSTALL OFF CACHE BOOL "Skip glsland install")
-#set(SHADERC_ENABLE_SPVC ON CACHE BOOL "Build SPVC command line wrapper")
+set(SHADERC_ENABLE_SPVC OFF CACHE BOOL "Build SPVC command line wrapper")
 set(JSON_BuildTests OFF CACHE BOOL "Build third party library tests")
 set(JSON_Install OFF CACHE BOOL "Install library")
 
