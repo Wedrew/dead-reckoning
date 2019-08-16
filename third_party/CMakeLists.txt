@@ -2,7 +2,7 @@ find_package(Git QUIET)
 find_package(Python3 COMPONENTS Interpreter)
 
 # Submodule settings
-set(BUILD_STATIC_LIBS ON CACHE BOOL "Build static libraries")
+#set(BUILD_STATIC_LIBS ON CACHE BOOL "Build static libraries")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Don't build shared libraries")
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs")
@@ -20,7 +20,7 @@ set(JSON_Install OFF CACHE BOOL "Install library")
 if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     message(STATUS "Recursively updating git submodules")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                     RESULT_VARIABLE GIT_SUBMOD_INIT_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SUBMOD_INIT_RESULT EQUAL "0")
@@ -29,7 +29,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 
     message(STATUS "Checking out correct branch for each submodule")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --remote
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                     RESULT_VARIABLE GIT_SUBMOD_REMOTE_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SUBMOD_REMOTE_RESULT EQUAL "0")
