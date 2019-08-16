@@ -21,7 +21,7 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Configure external libraries
-include(third_party/CMakeLists.txt)
+add_subdirectory(third_party)
 
 # Add all the newely synced cmake projects
 add_subdirectory(third_party/shaderc/src)

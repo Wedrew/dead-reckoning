@@ -19,26 +19,17 @@ set(JSON_Install OFF CACHE BOOL "Install library")
 # Update all the third party submodules
 if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     message(STATUS "Recursively updating git submodules")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --remote --init --recursive
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                     RESULT_VARIABLE GIT_SUBMOD_INIT_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SUBMOD_INIT_RESULT EQUAL "0")
         message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_INIT_RESULT}, please checkout submodules")
     endif()
 
-    message(STATUS "Checking out correct branch for each submodule")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --remote
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                    RESULT_VARIABLE GIT_SUBMOD_REMOTE_RESULT
-                    OUTPUT_QUIET)
-    if(NOT GIT_SUBMOD_REMOTE_RESULT EQUAL "0")
-        message(FATAL_ERROR "git submodule update --remote failed with ${GIT_SUBMOD_REMOTE_RESULT}, please checkout submodules")
-    endif()
-
     message(STATUS "Updating shaderc sources")
     execute_process(COMMAND ${Python3_EXECUTABLE} update_shaderc_sources.py 
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/shaderc
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shaderc
                     RESULT_VARIABLE GIT_SHADERC_SRC_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SHADERC_SRC_RESULT EQUAL "0")
@@ -47,7 +38,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 
     message(STATUS "Updating shaderc git dependencies")
     execute_process(COMMAND ./utils/git-sync-deps
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/shaderc/src
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shaderc/src
                     RESULT_VARIABLE GIT_SHADERC_DEPS_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SHADERC_DEPS_RESULT EQUAL "0")
