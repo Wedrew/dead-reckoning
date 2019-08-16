@@ -41,8 +41,8 @@ bool AssetsManager::compileShaders(bool optimize) {
         } else if(shader.first.extension().string() == ".vert") {
             kind = shaderc_vertex_shader;
         } else {
-            assetsLogger->debug("Unrecongnized Stem: {}", shader.first.extension().string());
             kind = shaderc_compute_shader;
+            assetsLogger->debug("Unrecongnized Stem: {}", shader.first.extension().string());
         }
         //auto preProcc = preprocessShader(shader.first, kind, shader.second);
         //auto spirVAssembly = compileToAssembly(shader.first, kind, shader.second, optimize);
