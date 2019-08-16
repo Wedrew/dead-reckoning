@@ -2,7 +2,7 @@ find_package(Git QUIET)
 find_package(Python3 COMPONENTS Interpreter)
 
 # Submodule settings
-#set(BUILD_STATIC_LIBS ON CACHE BOOL "Build static libraries")
+set(BUILD_STATIC_LIBS ON CACHE BOOL "Build static libraries")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Don't build shared libraries")
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs")
