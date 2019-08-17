@@ -11,8 +11,9 @@ set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "Enable C++ 17")
 set(SPIRV_HEADERS_SKIP_EXAMPLES ON CACHE BOOL "Skip building SPIR-V header examples")
 set(SKIP_SPIRV_TOOLS_INSTALL ON CACHE BOOL "Skip building SPIR-V tools")
 set(SPIRV_SKIP_TESTS ON CACHE BOOL "Skip building SPIR-V tests")
-set(SKIP_GLSLANG_INSTALL OFF CACHE BOOL "Skip glsland install")
+set(SKIP_GLSLANG_INSTALL ON CACHE BOOL "Skip glsland install")
 set(SHADERC_ENABLE_SPVC OFF CACHE BOOL "Build SPVC command line wrapper")
+set(SHADERC_ENABLE_TESTS OFF CACHE BOOL "Disable shaderc tests")
 set(JSON_BuildTests OFF CACHE BOOL "Build third party library tests")
 set(JSON_Install OFF CACHE BOOL "Install library")
 
@@ -37,8 +38,8 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     #endif()
 
     message(STATUS "Updating shaderc git dependencies")
-    execute_process(COMMAND ./utils/git-sync-deps
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shaderc/src
+    execute_process(COMMAND ${Python3_EXECUTABLE} utils/git-sync-deps
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shaderc
                     RESULT_VARIABLE GIT_SHADERC_DEPS_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SHADERC_DEPS_RESULT EQUAL "0")
