@@ -13,7 +13,7 @@ set(SKIP_SPIRV_TOOLS_INSTALL ON CACHE BOOL "Skip building SPIR-V tools")
 set(SPIRV_SKIP_TESTS ON CACHE BOOL "Skip building SPIR-V tests")
 set(SKIP_GLSLANG_INSTALL ON CACHE BOOL "Skip glsland install")
 set(SHADERC_ENABLE_SPVC OFF CACHE BOOL "Build SPVC command line wrapper")
-set(SHADERC_ENABLE_TESTS OFF CACHE BOOL "Disable shaderc tests")
+set(SHADERC_SKIP_TESTS ON CACHE BOOL "Disable shaderc tests")
 set(JSON_BuildTests OFF CACHE BOOL "Build third party library tests")
 set(JSON_Install OFF CACHE BOOL "Install library")
 
@@ -21,25 +21,16 @@ set(JSON_Install OFF CACHE BOOL "Install library")
 if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     message(STATUS "Recursively updating git submodules")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --remote --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                     RESULT_VARIABLE GIT_SUBMOD_INIT_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SUBMOD_INIT_RESULT EQUAL "0")
         message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_INIT_RESULT}, please checkout submodules")
     endif()
 
-    #message(STATUS "Updating shaderc sources")
-    #execute_process(COMMAND ${Python3_EXECUTABLE} update_shaderc_sources.py 
-    #WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shaderc
-    #RESULT_VARIABLE GIT_SHADERC_SRC_RESULT
-    #OUTPUT_QUIET)
-    #if(NOT GIT_SHADERC_SRC_RESULT EQUAL "0")
-    #message(FATAL_ERROR "Failed to update shaderc sources with error: ${GIT_SHADERC_SRC_RESULT}")
-    #endif()
-
     message(STATUS "Updating shaderc git dependencies")
     execute_process(COMMAND ${Python3_EXECUTABLE} utils/git-sync-deps
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/shaderc
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/third_party/shaderc
                     RESULT_VARIABLE GIT_SHADERC_DEPS_RESULT
                     OUTPUT_QUIET)
     if(NOT GIT_SHADERC_DEPS_RESULT EQUAL "0")

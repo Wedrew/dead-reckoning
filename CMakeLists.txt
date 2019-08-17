@@ -31,8 +31,6 @@ add_subdirectory(third_party/spdlog)
 add_subdirectory(third_party/json)
 add_subdirectory(third_party/cxxopts)
 
-include_directories(${shaderc_SOURCE_DIR}/libshaderc/include)
-
 # Add Modules
 add_subdirectory(game)
 add_subdirectory(window)
