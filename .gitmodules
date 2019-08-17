@@ -2,10 +2,6 @@
 	path = third_party/glfw
 	url = https://github.com/glfw/glfw
 	branch = 3.3-stable
-[submodule "third_party/shaderc"]
-	path = third_party/shaderc
-	url = https://github.com/google/shaderc
-	branch = known-good
 [submodule "third_party/spdlog"]
 	path = third_party/spdlog
 	url = https://github.com/gabime/spdlog
@@ -21,4 +17,8 @@
 [submodule "third_party/cxxopts"]
 	path = third_party/cxxopts
 	url = https://github.com/jarro2783/cxxopts
+	branch = master
+[submodule "third_party/shaderc"]
+	path = third_party/shaderc
+	url = https://github.com/google/shaderc
 	branch = master
