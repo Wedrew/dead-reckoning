@@ -85,6 +85,7 @@ private:
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const &availablePresentModes);
     VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const &capabilities);
+    VkShaderModule createShaderModule(std::vector<uint32_t> const& code);
     std::vector<char const*> getRequiredExtensions();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

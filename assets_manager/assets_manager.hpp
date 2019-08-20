@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "utils/utils.hpp"
-#include "shaderc/shaderc.hpp"
 
 namespace fs = std::filesystem;
 using FileMap = std::map<fs::path, std::string>;
+using SpirVMap = std::map<fs::path, std::vector<uint32_t>>;
 
 namespace zero {
 
@@ -24,8 +24,9 @@ public:
     void refreshFiles();
 
     // Back class with iteration directorly for range based for loops
-    FileMap::iterator begin() {return assets.begin();};
-    FileMap::iterator end() {return assets.end();};
+    SpirVMap::iterator begin() {return spirVModules.begin();};
+    SpirVMap::iterator end() {return spirVModules.end();};
+    SpirVMap const &getSpirvModules() {return spirVModules;};
     FileMap const &getAssets() {return assets;};
 
 protected:
@@ -37,12 +38,12 @@ protected:
 private:
     std::string assetType = type(this);
     std::shared_ptr<spdlog::logger> assetsLogger = zero::createSpdLogger(assetType, spdlog::level::debug);
-    shaderc::Compiler compiler;
-    shaderc::CompileOptions options;
+    // shaderc::Compiler compiler;
+    // shaderc::CompileOptions options;
 
-    std::string preprocessShader(fs::path const &path, shaderc_shader_kind kind, std::string const &source);
-    std::string compileToAssembly(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
-    std::vector<uint32_t> compileFile(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
+    // std::string preprocessShader(fs::path const &path, shaderc_shader_kind kind, std::string const &source);
+    // std::string compileToAssembly(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
+    // std::vector<uint32_t> compileFile(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
     void recursivelyAcquire(fs::path const& path);
 };
 }

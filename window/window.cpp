@@ -27,6 +27,9 @@ void Window::initGLFW() {
         windowLogger->error("Failed to initialize GLFW");
         throw std::runtime_error("Failed to initialize GLFW!");
     }
+    if(not glfwVulkanSupported()) {
+        windowLogger->debug("Vulkan is not supported. Defaulting to OpenGL backend");
+    }
     
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);

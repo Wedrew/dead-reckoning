@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 set(CMAKE_BUILD_TYPE "Debug")
 
@@ -10,7 +10,6 @@ ENDIF()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(zero)
@@ -22,14 +21,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Configure external libraries
 add_subdirectory(third_party)
-
-# Add all the newely synced cmake projects
-add_subdirectory(third_party/shaderc)
-add_subdirectory(third_party/glfw)
-add_subdirectory(third_party/glm)
-add_subdirectory(third_party/spdlog)
-add_subdirectory(third_party/json)
-add_subdirectory(third_party/cxxopts)
 
 # Add Modules
 add_subdirectory(game)

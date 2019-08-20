@@ -13,8 +13,6 @@ namespace zero {
 Renderer::Renderer(std::string title) : title(title) {
     rendererLogger->debug("Created Renderer object");
 
-    shaders.compileShaders(true);
-
 }
 
 Renderer::~Renderer() {
@@ -53,7 +51,7 @@ void Renderer::initVulkan(GLFWwindow *window) {
         createLogicalDevice();
         createSwapChain();
         createImageViews();
-        createGraphicsPipeline();
+        //createGraphicsPipeline();
     }
 }
 
@@ -138,8 +136,45 @@ void Renderer::createImageViews() {
 }
 
 void Renderer::createGraphicsPipeline() {
+    //shaders.compileShaders(true);
+    rendererLogger->debug("Creating shader module: {}", shaders.getSpirvModules().rbegin()->first.string());
+    auto fragShaderModule = createShaderModule(shaders.getSpirvModules().rbegin()->second);
+
+    rendererLogger->debug("Creating shader module: {}", shaders.getSpirvModules().rend()->first.string());
+    auto vertShaderModule = createShaderModule(shaders.getSpirvModules().rend()->second);
 
 
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+    vkDestroyShaderModule(device, vertShaderModule, nullptr);
+    vkDestroyShaderModule(device, fragShaderModule, nullptr);
+}
+
+VkShaderModule Renderer::createShaderModule(std::vector<uint32_t> const& code) {
+    VkShaderModuleCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size(); // Need to get this as the size in bytes.
+    createInfo.pCode = code.data();
+
+    VkShaderModule shaderModule;
+    if(vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) not_eq VK_SUCCESS) {
+        rendererLogger->error("Failed to create shader module");
+        throw std::runtime_error("Failed to create shader module!");
+    } else {
+        return shaderModule;
+    }
 }
 
 void Renderer::pickPhysicalDevice() {
