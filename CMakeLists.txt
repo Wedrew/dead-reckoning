@@ -27,7 +27,7 @@ add_subdirectory(third_party)
 
 # Add Modules
 add_subdirectory(${CMAKE_BINARY_DIR}/shaderc-2019.0)
-include_directories(${glfw_SOURCE_DIR}/include)
+include_directories(${shaderc_INCLUDE_DIR})
 add_subdirectory(game)
 add_subdirectory(window)
 add_subdirectory(renderer)
