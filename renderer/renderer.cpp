@@ -51,7 +51,7 @@ void Renderer::initVulkan(GLFWwindow *window) {
         createLogicalDevice();
         createSwapChain();
         createImageViews();
-        //createGraphicsPipeline();
+        createGraphicsPipeline();
     }
 }
 
@@ -136,7 +136,7 @@ void Renderer::createImageViews() {
 }
 
 void Renderer::createGraphicsPipeline() {
-    //shaders.compileShaders(true);
+    shaders.compileShaders(true);
     rendererLogger->debug("Creating shader module: {}", shaders.getSpirvModules().rbegin()->first.string());
     auto fragShaderModule = createShaderModule(shaders.getSpirvModules().rbegin()->second);
 

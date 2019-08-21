@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+#include "shaderc/shaderc.hpp"
 #include "utils/utils.hpp"
 
 namespace fs = std::filesystem;
@@ -38,12 +39,12 @@ protected:
 private:
     std::string assetType = type(this);
     std::shared_ptr<spdlog::logger> assetsLogger = zero::createSpdLogger(assetType, spdlog::level::debug);
-    // shaderc::Compiler compiler;
-    // shaderc::CompileOptions options;
+    shaderc::Compiler compiler;
+    shaderc::CompileOptions options;
 
-    // std::string preprocessShader(fs::path const &path, shaderc_shader_kind kind, std::string const &source);
-    // std::string compileToAssembly(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
-    // std::vector<uint32_t> compileFile(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
+    std::string preprocessShader(fs::path const &path, shaderc_shader_kind kind, std::string const &source);
+    std::string compileToAssembly(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
+    std::vector<uint32_t> compileFile(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize = false);
     void recursivelyAcquire(fs::path const& path);
 };
 }

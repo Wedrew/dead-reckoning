@@ -19,10 +19,14 @@ find_package(Vulkan REQUIRED FATAL_ERROR)
 # TODO: Rework this to do target level includes
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+# Configure shaderc
+include(cmake/shaderc.cmake)
+
 # Configure external libraries
 add_subdirectory(third_party)
 
 # Add Modules
+add_subdirectory(${CMAKE_BINARY_DIR}/shaderc-2019.0)
 add_subdirectory(game)
 add_subdirectory(window)
 add_subdirectory(renderer)

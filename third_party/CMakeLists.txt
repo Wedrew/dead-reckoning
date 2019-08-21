@@ -21,6 +21,7 @@ if(NOT glfw_POPULATED)
 endif()
 
 message(STATUS "GLFW finished downloading")
+# ------------------------------------------------------------------------------
 
 
 # ------------------------------------------------------------------------------
@@ -40,7 +41,6 @@ if(NOT spdlog_POPULATED)
 endif()
 
 message(STATUS "spdlog finished downloading")
-
 # -------------------------------------------------------------------------------
 
 
@@ -63,8 +63,8 @@ if(NOT glm_POPULATED)
 endif()
 
 message(STATUS "GLM finished downloading")
-
 # -------------------------------------------------------------------------------
+
 
 # ------------------------------------------------------------------------------
 # Modern json parser for c++ https://nlohmann.github.io/json/
@@ -85,9 +85,10 @@ if(NOT json_POPULATED)
 endif()
 
 message(STATUS "Nlohmann json finished downloading")
-
 # -------------------------------------------------------------------------------
 
+
+# -------------------------------------------------------------------------------
 # A lightweight C++ option parser library, supporting the standard GNU style syntax 
 # for options.
 FetchContent_Declare(cxxopts
@@ -105,7 +106,6 @@ if(NOT cxxopts_POPULATED)
 endif()
 
 message(STATUS "cxxopts finished downloading")
-
 # -------------------------------------------------------------------------------
 
-#FetchContent_MakeAvailable(glfw spdlog)
+FetchContent_MakeAvailable(glfw spdlog glm json cxxopts)
