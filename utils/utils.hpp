@@ -3,7 +3,6 @@
 
 #include <string>
 #include <typeinfo>
-#include <string>
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"

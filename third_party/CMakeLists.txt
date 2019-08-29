@@ -13,11 +13,12 @@ FetchContent_GetProperties(glfw)
 
 if(NOT glfw_POPULATED)
     FetchContent_Populate(glfw)
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_VULKAN_STATIC ON CACHE BOOL "")
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
 
-    add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} EXCLUDE_FROM_ALL)
+    add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
 endif()
 
 message(STATUS "GLFW finished downloading")
@@ -36,8 +37,11 @@ FetchContent_GetProperties(spdlog)
 
 if(NOT spdlog_POPULATED)
     FetchContent_Populate(spdlog)
+    set(SPDLOG_BUILD_EXAMPLES OFF CACHE BOOL "")
+    set(SPDLOG_BUILD_BENCH OFF CACHE BOOL "")
+    set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "")
 
-    add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR} EXCLUDE_FROM_ALL)
+    add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
 endif()
 
 message(STATUS "spdlog finished downloading")
@@ -57,9 +61,9 @@ FetchContent_GetProperties(glm)
 
 if(NOT glm_POPULATED)
     FetchContent_Populate(glm)
-    set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "" FORCE)
+    set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "")
 
-    add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR} EXCLUDE_FROM_ALL)
+    add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
 endif()
 
 message(STATUS "GLM finished downloading")
@@ -78,10 +82,10 @@ FetchContent_GetProperties(json)
 
 if(NOT json_POPULATED)
     FetchContent_Populate(json)
-    set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
-    set(JSON_Install OFF CACHE BOOL "" FORCE)
+    set(JSON_BuildTests OFF CACHE BOOL "")
+    set(JSON_Install OFF CACHE BOOL "")
 
-    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR})
 endif()
 
 message(STATUS "Nlohmann json finished downloading")
@@ -102,7 +106,7 @@ FetchContent_GetProperties(cxxopts)
 if(NOT cxxopts_POPULATED)
     FetchContent_Populate(cxxopts)
 
-    add_subdirectory(${cxxopts_SOURCE_DIR} ${cxxopts_BINARY_DIR} EXCLUDE_FROM_ALL)
+    add_subdirectory(${cxxopts_SOURCE_DIR} ${cxxopts_BINARY_DIR})
 endif()
 
 message(STATUS "cxxopts finished downloading")

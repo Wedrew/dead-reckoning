@@ -1,6 +1,3 @@
-#ifndef WINDOW_H
-#define WINDOW_H
-
 //!**********************************************************
 //! @file   window.cpp
 //!
@@ -15,6 +12,9 @@
 //! Copyright 2019-2020 Harmonics Inc
 //! All rights reserved.
 //!***********************************************************/
+
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <vector>
 #include <string>
@@ -47,7 +47,6 @@ protected:
 private:
     std::string windowType = type(this);
     std::shared_ptr<spdlog::logger> windowLogger = zero::createSpdLogger(windowType, spdlog::level::debug);
-    AssetsManager assets = AssetsManager("assets/images");
     std::vector<MonitorDetails> monitors;
     MonitorDetails *currentMonitor;
     GLFWwindow *window;

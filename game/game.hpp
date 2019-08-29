@@ -1,6 +1,3 @@
-#ifndef GAME_H
-#define GAME_H
-
 //!**********************************************************
 //! @file   game.cpp
 //!
@@ -16,8 +13,10 @@
 //! All rights reserved.
 //!***********************************************************/
 
+#ifndef GAME_H
+#define GAME_H
+
 #include <string>
-#include <map> 
 #include <vector>
 
 #include "window/window.hpp"
@@ -25,7 +24,7 @@
 
 namespace zero {
 
-class Game : public Window {
+class Game final : public Window {
 public:
     Game(std::string title, uint flags);
     ~Game();

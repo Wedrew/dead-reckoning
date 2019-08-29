@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "window/window.hpp"
+#include "window.hpp"
 
 namespace zero {
 

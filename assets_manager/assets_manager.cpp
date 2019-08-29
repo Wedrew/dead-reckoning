@@ -1,113 +1,152 @@
 #include <fstream>
 #include <iterator>
+#include <string_view>
 
 #include "assets_manager.hpp"
+#include "StandAlone/DirStackFileIncluder.h"
+#include "StandAlone/ResourceLimits.h"
 
 namespace fs = std::filesystem;
 
 namespace zero {
 
-AssetsManager::AssetsManager(std::string dirName) : assetsDir(fs::absolute(dirName)) {
+AssetsManager::AssetsManager() {
+    glslang::InitializeProcess();
     recursivelyAcquire(assetsDir);
-
-    assetsLogger->info("Found directory {}", dirName);
 }
 
 void AssetsManager::recursivelyAcquire(fs::path const &path) {
     // Get all the files in the assets directory
     if(fs::exists(path) and fs::is_directory(path)) {
+        assetsLogger->info("Found assets folder at {}", assetsDir.string());
         for(auto const &file: fs::recursive_directory_iterator(path)) {
             if(not file.is_directory()) {
-                std::ifstream vShadFrag{file.path()};
-                std::string vShadFragContents{std::istreambuf_iterator<char>(vShadFrag), std::istreambuf_iterator<char>()};
-                assets.insert(std::pair<fs::path, std::string>(file, vShadFragContents));
+
+                std::ifstream fileStream(file.path().string(), std::ios::binary);
+                std::string fileContents((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
+
+                if(file.path().parent_path().filename() == "fonts") {
+                    fontsFileMap.insert(std::pair<fs::path, std::string>(file, fileContents));
+                    assetsLogger->info("Stored font {}", file.path().filename().string());
+                } else if(file.path().parent_path().filename() == "images") {
+                    imagesFileMap.insert(std::pair<fs::path, std::string>(file, fileContents));
+                    assetsLogger->info("Stored image {}", file.path().filename().string());
+                } else if(file.path().parent_path().filename() == "shaders") {
+                    shadersFileMap.insert(std::pair<fs::path, std::string>(file, fileContents));
+                    assetsLogger->info("Stored shader {}", file.path().filename().string());
+                }
             }
         }
     }
 }
 
 void AssetsManager::refreshFiles() {
-    assets.clear();
+    fontsFileMap.clear();
+    imagesFileMap.clear();
+    shadersFileMap.clear();
     recursivelyAcquire(assetsDir);
 }
 
-bool AssetsManager::compileShaders(bool optimize) {
-    for(auto const &shader : assets) {
-        // TODO: Add error handling
-        shaderc_shader_kind kind;
-
-        if(shader.first.extension().string() == ".frag") {
-            kind = shaderc_fragment_shader;
-        } else if(shader.first.extension().string() == ".vert") {
-            kind = shaderc_vertex_shader;
-        } else {
-            kind = shaderc_compute_shader;
-            assetsLogger->debug("Unrecongnized Stem: {}", shader.first.extension().string());
-        }
-        //auto preProcc = preprocessShader(shader.first, kind, shader.second);
-        //auto spirVAssembly = compileToAssembly(shader.first, kind, shader.second, optimize);
-        auto spirVBinary = compileFile(shader.first, kind, shader.second, optimize);
-
-        spirVModules.insert(std::pair<fs::path, std::vector<uint32_t>>(shader.first, spirVBinary));
+void AssetsManager::compileShaders(bool optimize) {
+    // First preprocess and parse
+    for(auto const &file : shadersFileMap) {
+        compileGLSL(file.first, file.second);
     }
-    return true;
+
+    // // Next compile the shader
+    // for(auto shader : glslangShaders) {
+    //     program.addShader(shader);
+    // }
+
+
+
 }
 
-// Returns GLSL shader source text after preprocessing.
-std::string AssetsManager::preprocessShader(fs::path const &path, shaderc_shader_kind kind, std::string const &source) {
-    //options.AddMacroDefinition("MY_DEFINE", "1");
+void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileString) {
+    EShLanguage shaderType = getShaderStage(file.extension().string());
+    glslang::TShader shader(shaderType);
+    auto inputCString = fileString.c_str();
+    shader.setStrings(&inputCString, 1);
 
-    auto result = compiler.PreprocessGlsl(source, kind, path.c_str(), options);
+    int clientInputSemanticsVersion = 100; // maps to, say, #define VULKAN 100
+    glslang::EShTargetClientVersion vulkanClientVersion = glslang::EShTargetOpenGL_450;
+    glslang::EShTargetLanguageVersion targetVersion = glslang::EShTargetSpv_1_0;
 
-    if(result.GetCompilationStatus() not_eq shaderc_compilation_status_success) {
-        assetsLogger->error("Failed to preprocess shader: {}", path.string());
-        assetsLogger->error("Shaderc Error: {}", result.GetErrorMessage());
-        return nullptr;
+    shader.setEnvInput(glslang::EShSourceGlsl, shaderType, glslang::EShClientVulkan, clientInputSemanticsVersion);
+    shader.setEnvClient(glslang::EShClientVulkan, vulkanClientVersion);
+    shader.setEnvTarget(glslang::EShTargetSpv, targetVersion);
+
+    TBuiltInResource resources = glslang::DefaultTBuiltInResource;
+    EShMessages messages = (EShMessages) (EShMsgSpvRules | EShMsgVulkanRules);
+    const int defaultVersion = 450;
+
+    DirStackFileIncluder includer;
+    includer.pushExternalLocalDirectory(file.parent_path().string());
+
+    std::string preprocessedGLSL;
+
+    if(not shader.preprocess(&resources, defaultVersion, ENoProfile, false, false, messages, &preprocessedGLSL, includer)) {
+        assetsLogger->error("GLSL preprocessing failed for: {}", file.string());
+        assetsLogger->error("shader.getInfoLog(): {}", shader.getInfoLog());
+        assetsLogger->error("shader.getInfoDebugLog(): {}", shader.getInfoDebugLog());
+        throw std::runtime_error("GLSL preprocessing failed");
     } else {
-        assetsLogger->debug("Successfully preprocessed shader: {}", path.string());
-        return {result.cbegin(), result.cend()};
-    }
-}
-
-// Compiles a shader to SPIR-V assembly. Returns the assembly text
-// as a string.
-std::string AssetsManager::compileToAssembly(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize) {
-    //options.AddMacroDefinition("MY_DEFINE", "1");
-
-    if(optimize){
-        options.SetOptimizationLevel(shaderc_optimization_level_size);
+        assetsLogger->debug("GLSL preprocessing succeeded for: {}", file.string());
     }
 
-    auto result = compiler.CompileGlslToSpvAssembly(source, kind, path.c_str(), options);
+    const char *preprocessedCStr = preprocessedGLSL.c_str();
+    shader.setStrings(&preprocessedCStr, 1);
+    glslang::TProgram program;
 
-    if(result.GetCompilationStatus() not_eq shaderc_compilation_status_success) {
-        assetsLogger->error("Failed to build assembly for: {}", path.string());
-        assetsLogger->error("Shaderc Error: {}", result.GetErrorMessage());
-        return nullptr;
+    if(not shader.parse(&resources, defaultVersion, false, messages)) {
+        assetsLogger->error("GLSL parsing failed for: {}", file.string());
+        assetsLogger->error("shader.getInfoLog(): {}", shader.getInfoLog());
+        assetsLogger->error("shader.getInfoDebugLog(): {}", shader.getInfoDebugLog());
+        throw std::runtime_error("GLSL parsing failed");
     } else {
-        assetsLogger->debug("Successfully assembled: {}", path.string());
-        return {result.cbegin(), result.cend()};
-    }
-}
-
-// Compiles a shader to a SPIR-V binary. Returns the binary as
-// a vector of 32-bit words
-std::vector<uint32_t> AssetsManager::compileFile(fs::path const &path, shaderc_shader_kind kind, std::string const &source, bool optimize) {
-    //options.AddMacroDefinition("MY_DEFINE", "1");
-
-    if(optimize) {
-        options.SetOptimizationLevel(shaderc_optimization_level_size);
+        assetsLogger->debug("GLSL parsing succeeded for: {}", file.string());
+        program.addShader(&shader);
     }
 
-    auto module = compiler.CompileGlslToSpv(source, kind, path.c_str(), options);
-
-    if(module.GetCompilationStatus() not_eq shaderc_compilation_status_success) {
-        assetsLogger->error("Failed to build binary for: {}", path.string());
-        assetsLogger->error("Shaderc Error: {}", module.GetErrorMessage());
-        return std::vector<uint32_t>();
+    if(not program.link(messages)) {
+        assetsLogger->error("GLSL linking failed");
+        assetsLogger->error("shader.getInfoLog(): {}", shader.getInfoLog());
+        assetsLogger->error("shader.getInfoDebugLog(): {}", shader.getInfoDebugLog());
+        throw std::runtime_error("GLSL parsing failed");
     } else {
-        assetsLogger->debug("Succesfully built binary for: {}", path.string());
-        return {module.cbegin(), module.cend()};
+        assetsLogger->debug("GLSL linking succeeded for: {}", file.string());
+    }
+
+    std::vector<uint32_t> spirV;
+    spv::SpvBuildLogger logger;
+    glslang::SpvOptions spvOptions;
+    glslang::GlslangToSpv(*program.getIntermediate(shaderType), spirV, &logger, &spvOptions);
+
+    if (logger.getAllMessages().length() > 0) {
+        assetsLogger->debug("Spv logger says: {}", logger.getAllMessages());
+    }
+
+    spirVModules.insert(std::pair<std::string, std::vector<uint32_t>>(file.filename().string(), spirV));
+    assetsLogger->debug("Stored SpirV module {}", file.filename().string());
+}
+
+EShLanguage AssetsManager::getShaderStage(std::string const &stage) {
+    if (stage == ".vert") {
+        return EShLangVertex;
+    } else if (stage == ".tesc") {
+        return EShLangTessControl;
+    } else if (stage == ".tese") {
+        return EShLangTessEvaluation;
+    } else if (stage == ".geom") {
+        return EShLangGeometry;
+    } else if (stage == ".frag") {
+        return EShLangFragment;
+    } else if (stage == ".comp") {
+        return EShLangCompute;
+    } else {
+        assetsLogger->error("Unknown shader stage");
+        return EShLangCount;
     }
 }
+
 }

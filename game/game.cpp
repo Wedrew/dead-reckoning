@@ -1,9 +1,4 @@
-#include <memory>
-#include <iostream>
-#include <vector>
-#include <iostream>
-
-#include "game/game.hpp"
+#include "game.hpp"
 
 namespace zero {
 

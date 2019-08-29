@@ -1,12 +1,12 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#define VULKAN_ENABLE_LUNARG_VALIDATION
+#define GLFW_INCLUDE_VULKAN
+
 #include <string>
 #include <optional>
 #include <vector>
-
-#define VULKAN_ENABLE_LUNARG_VALIDATION
-#define GLFW_INCLUDE_VULKAN
 
 #include "GLFW/glfw3.h"
 #include "utils/utils.hpp"
@@ -60,13 +60,16 @@ private:
     VkExtent2D swapChainExtent;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties deviceProperties;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+    VkRenderPass renderPass;
     MonitorDetails *currentMonitor;
     std::string rendererType = type(this);
     std::string engineName = "Over Zero";
     std::shared_ptr<spdlog::logger> rendererLogger = zero::createSpdLogger(rendererType, spdlog::level::debug);
     std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
-    AssetsManager shaders = AssetsManager("shaders");
+    AssetsManager shaders = AssetsManager();
 
     void createInstance();
     void createSurface(GLFWwindow *window);
@@ -74,6 +77,7 @@ private:
     void createSwapChain();
     void createImageViews();
     void createGraphicsPipeline();
+    void createRenderPass();
     void pickPhysicalDevice();
     bool isDeviceSuitable(VkPhysicalDevice device);
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
