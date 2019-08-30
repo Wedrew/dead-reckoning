@@ -7,3 +7,10 @@ Dependencies:
  - git (https://git-scm.com/download/win)
  - Vulkan Lunar SDK (https://www.lunarg.com/vulkan-sdk/)
  - A Vulkan compatible graphics card and driver
+ 
+ Build instructions:
+  Linux:
+  - git clone https://github.com/Wedrew/zeroth-order
+  - cd zeroth-order
+  - mkdir build && cd build
+  - cmake ..
