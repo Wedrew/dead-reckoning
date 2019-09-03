@@ -128,6 +128,7 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
 
     spirVModules.insert(std::pair<std::string, std::vector<uint32_t>>(file.filename().string(), spirV));
     assetsLogger->debug("Stored SpirV module {}", file.filename().string());
+    shadersDone = true;
 }
 
 EShLanguage AssetsManager::getShaderStage(std::string const &stage) {

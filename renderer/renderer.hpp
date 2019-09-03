@@ -2,16 +2,14 @@
 #define RENDERER_H
 
 #define VULKAN_ENABLE_LUNARG_VALIDATION
-#define GLFW_INCLUDE_VULKAN
 
 #include <string>
 #include <optional>
 #include <vector>
 
+#include "vulkan/vulkan.h"
 #include "GLFW/glfw3.h"
 #include "utils/utils.hpp"
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
 #include "window/window_details.hpp"
 #include "assets_manager/assets_manager.hpp"
 
@@ -47,8 +45,15 @@ protected:
     void initVulkan(GLFWwindow *window);
     void uninitializeRenderer(GLFWwindow *window);
     void setMonitor(MonitorDetails *monitor) {currentMonitor = monitor;};
+    void drawFrame();
+    void waitDeviceIdle();
+    void setFrameBufferResize(bool wasResized) {frameBufferResized = wasResized;};
 
 private:
+    const int maxFramesInFlight = 2;
+    bool frameBufferResized = false;
+    size_t currentFrame = 0;
+
     VkDevice device;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
@@ -63,12 +68,19 @@ private:
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
     VkRenderPass renderPass;
+    VkCommandPool commandPool;
     MonitorDetails *currentMonitor;
     std::string rendererType = type(this);
     std::string engineName = "Over Zero";
     std::shared_ptr<spdlog::logger> rendererLogger = zero::createSpdLogger(rendererType, spdlog::level::debug);
     std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+    std::vector<VkCommandBuffer> commandBuffers;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+
     AssetsManager shaders = AssetsManager();
 
     void createInstance();
@@ -78,6 +90,12 @@ private:
     void createImageViews();
     void createGraphicsPipeline();
     void createRenderPass();
+    void createFrameBuffers();
+    void createCommandPool();
+    void createCommandBuffers();
+    void createSyncObjects();
+    void recreateSwapChain();
+    void cleanupSwapChain();
     void pickPhysicalDevice();
     bool isDeviceSuitable(VkPhysicalDevice device);
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);

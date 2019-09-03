@@ -32,17 +32,18 @@ void Window::initGLFW() {
     }
     
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 }
 
 void Window::initWindow() {
     getMonitors();
 
-    //auto width = currentMonitor->modes.back()->width;
-    //auto height = currentMonitor->modes.back()->height;
+    auto width = currentMonitor->modes.back()->width;
+    auto height = currentMonitor->modes.back()->height;
 
-    //window = glfwCreateWindow(width, height, title.c_str(), currentMonitor->monitor, nullptr);
+    //window = glfwCreateWindow(width, height, title.c_str(), currentMonitor->monitor, window);
     window = glfwCreateWindow(640, 480, title.c_str(), nullptr, nullptr);
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
     if(not window) {
         windowLogger->error("Failed to create GLFW window");
@@ -53,7 +54,9 @@ void Window::initWindow() {
 void Window::mainLoop() {
     while(not glfwWindowShouldClose(window)) {
         glfwPollEvents();
+        drawFrame();
     }
+    waitDeviceIdle();
 }
 
 void Window::getMonitors() {
@@ -72,7 +75,6 @@ void Window::getMonitors() {
         }
 
         monitor.monitorName = glfwGetMonitorName(tempMonitors[i]);
-
         monitors.push_back(monitor);
     }
 
@@ -82,7 +84,13 @@ void Window::getMonitors() {
         }
     }
     currentMonitor = &monitors.front();
+    currentMonitor->currentMode = currentMonitor->modes.size() - 1;
     setMonitor(currentMonitor);
+}
+
+void Window::frameBufferResizeCallback(GLFWwindow* window, int width, int height) {
+    //auto app = reinterpret_cast<zero::Window*>(glfwGetWindowUserPointer(window));
+    //app->setFrameBufferResize(true);
 }
 
 }

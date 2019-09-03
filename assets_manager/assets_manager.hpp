@@ -24,6 +24,7 @@ public:
     //std::string getAsset(std::string name) const {return assets.at(name);};
     void compileShaders(bool optimize);
     void refreshFiles();
+    bool areShadersCompiled() {return shadersDone;};
 
     // Back class with iteration directorly for range based for loops
     SpirVMap::iterator begin() {return spirVModules.begin();};
@@ -32,6 +33,7 @@ public:
     //FileMap const &getAssets() {return assets;};
 
 protected:
+    bool shadersDone = false;
     fs::path const rootDir = fs::current_path();
     fs::path const assetsDir = fs::current_path().append("assets");
     std::map<fs::path, std::string> fontsFileMap, imagesFileMap, shadersFileMap;

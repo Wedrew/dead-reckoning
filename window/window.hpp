@@ -20,8 +20,8 @@
 #include <string>
 
 #define VULKAN_ENABLE_LUNARG_VALIDATION
-#define GLFW_INCLUDE_VULKAN
 
+#include "vulkan/vulkan.h"
 #include "GLFW/glfw3.h"
 #include "utils/utils.hpp"
 #include "renderer/renderer.hpp"
@@ -50,6 +50,8 @@ private:
     std::vector<MonitorDetails> monitors;
     MonitorDetails *currentMonitor;
     GLFWwindow *window;
+
+    static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
 
 };
 }

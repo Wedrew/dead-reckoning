@@ -2,7 +2,8 @@
 #define RENDERER_HELPER_H
 
 #define VULKAN_ENABLE_LUNARG_VALIDATION
-#define GLFW_INCLUDE_VULKAN
+
+#include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
 
 namespace zero {
