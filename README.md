@@ -7,6 +7,7 @@ Dependencies:
  - git (https://git-scm.com/download/win)
  - Vulkan Lunar SDK (https://www.lunarg.com/vulkan-sdk/)
  - A Vulkan compatible graphics card and driver
+ - If on Windows the WDK (https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk)
  
  Build instructions:
   Linux:
