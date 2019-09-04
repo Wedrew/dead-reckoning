@@ -1,21 +1,12 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+project(zeroth_order VERSION 1.0 LANGUAGES CXX)
 
-set(CMAKE_BUILD_TYPE "Debug")
-
-IF(CMAKE_BUILD_TYPE MATCHES Debug)
-  message("-- Building with Debug on")
-ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
-  message("-- Building with Release on")
-ENDIF()
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "")
 set(CMAKE_CXX_STANDARD 17 CACHE BOOL "")
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "")
+set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
 set(BUILD_STATIC_LIBS ON CACHE BOOL "")
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE STRING "")
-
-project(zeroth_order VERSION 1.0 LANGUAGES CXX)
 
 # TODO: Rework this to do target level includes
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

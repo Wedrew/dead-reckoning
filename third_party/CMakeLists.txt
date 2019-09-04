@@ -113,4 +113,4 @@ endif()
 message(STATUS "cxxopts finished downloading")
 # -------------------------------------------------------------------------------
 
-FetchContent_MakeAvailable(glfw spdlog glm json cxxopts)
+#FetchContent_MakeAvailable(glfw spdlog glm json cxxopts)

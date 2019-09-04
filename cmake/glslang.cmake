@@ -34,7 +34,8 @@ if(NOT EXISTS ${GLSLANG_EXTRACT_PATH}/${GLSLANG_NAME}-${GLSLANG_VERSION})
         message(FATAL_ERROR "Failed to update glslang dependencies")
     endif()
 
-    set(GLSLANG_PATH ${CMAKE_BINARY_DIR}/downloads/${GLSLANG_NAME}-${GLSLANG_VERSION})
-
-    set(GLSLANG_INSTALL_DIR ${CMAKE_BINARY_DIR}/downloads/${GLSLANG_NAME}-${GLSLANG_VERSION} CACHE STRING "Tell vulkan loader where glslang is installed")
 endif()
+
+set(GLSLANG_PATH ${CMAKE_BINARY_DIR}/downloads/${GLSLANG_NAME}-${GLSLANG_VERSION})
+
+set(GLSLANG_INSTALL_DIR ${CMAKE_BINARY_DIR}/downloads/${GLSLANG_NAME}-${GLSLANG_VERSION} CACHE STRING "Tell vulkan loader where glslang is installed")
