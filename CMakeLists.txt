@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
-project(zeroth_order VERSION 1.0)
+project(zeroth_order VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "")
@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "")
 set(BUILD_STATIC_LIBS ON CACHE BOOL "")
 
 # TODO: Rework this to do target level includes
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Configure glslang, vulkan
 include(cmake/glslang.cmake)
