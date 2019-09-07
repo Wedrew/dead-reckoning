@@ -7,8 +7,9 @@ set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "")
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON CACHE BOOL "")
 
+
 # TODO: Rework this to do target level includes
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Configure glslang, vulkan
 include(cmake/glslang.cmake)
