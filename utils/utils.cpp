@@ -1,11 +1,11 @@
 #include "utils.hpp"
 
+namespace zero {
+
 #ifdef __GNUG__
 #include <cstdlib>
 #include <memory>
 #include <cxxabi.h>
-
-namespace zero {
 
 std::string demangle(char const* name) {
     int status = -4;
