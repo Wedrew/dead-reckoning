@@ -1,3 +1,4 @@
+#include <optional>
 #include "utils.hpp"
 
 namespace zero {
@@ -27,6 +28,7 @@ std::string demangle(char const* name) {
 #endif
 
 std::shared_ptr<spdlog::logger> createSpdLogger(std::string subsystemName, spdlog::level::level_enum level) {
+    //static std::optional<bool> firstLogger;
     auto &sinks = spdlog::default_logger()->sinks();
     auto logger = std::make_shared<spdlog::logger>(subsystemName, sinks.begin(), sinks.end());
     logger->set_level(level);

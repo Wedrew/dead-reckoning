@@ -25,8 +25,17 @@ if(NOT EXISTS ${VK_LOADER_EXTRACT_PATH}/${VK_LOADER_NAME}-${VK_LOADER_NUM_VERSIO
         RESULT_VARIABLE VK_LOADER_EXTRACT_SUCCESS
         OUTPUT_QUIET)
 
+    message(STATUS "Updating vulkan loader git dependencies")
+    execute_process(COMMAND ${Python3_EXECUTABLE} scripts/update_deps.py
+        WORKING_DIRECTORY ${VK_LOADER_EXTRACT_PATH}/${VK_LOADER_NAME}-${VK_LOADER_NUM_VERSION}
+        RESULT_VARIABLE VK_LOADER_UPDATE_SUCCESS)
+
+    if(VK_LOADER_UPDATE_SUCCESS EQUAL "1")
+        message(FATAL_ERROR "Failed to update VK_LOADER dependencies")
+    endif()
+
 endif()
 
 set(VK_LOADER_PATH ${CMAKE_BINARY_DIR}/downloads/${VK_LOADER_NAME}-${VK_LOADER_NUM_VERSION})
-
 set(VULKAN_LOADER_INSTALL_DIR ${CMAKE_BINARY_DIR}/downloads/${VK_LOADER_NAME}-${VK_LOADER_NUM_VERSION} CACHE STRING "Tell vulkan validation layer where loader is")
+set(VULKAN_HEADERS_INSTALL_DIR ${VK_LOADER_PATH}/Vulkan-Headers/build/install)

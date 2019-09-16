@@ -2,7 +2,7 @@
 
 namespace zero {
 
-Game::Game(std::string title, uint flags) : Window(title, flags) {
+Game::Game(std::string title, int flags) : Window(title, flags) {
     gameLogger->debug("Created Game object");
     
     run();

@@ -88,9 +88,4 @@ void Window::getMonitors() {
     setMonitor(currentMonitor);
 }
 
-void Window::frameBufferResizeCallback(GLFWwindow* window, int width, int height) {
-    //auto app = reinterpret_cast<zero::Window*>(glfwGetWindowUserPointer(window));
-    //app->setFrameBufferResize(true);
-}
-
 }

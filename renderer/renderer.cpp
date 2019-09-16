@@ -1,13 +1,15 @@
+#include <set>
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
-#include <set>
-
-#include "renderer.hpp"
-#include "renderer_helper.hpp"
+#include <glm/glm.hpp>
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"
+
+#include "renderer.hpp"
+#include "renderer_helper.hpp"
 
 namespace zero {
 
@@ -65,6 +67,7 @@ void Renderer::cleanupSwapChain() {
 }
 
 void Renderer::initVulkan(GLFWwindow *window) {
+    _window = window;
     if(not glfwVulkanSupported()) {
         rendererLogger->error("No vulkan support");
         throw std::runtime_error("No vulkan support!");
@@ -270,8 +273,13 @@ void Renderer::createImageViews() {
     }
 }
 
+// TODO: Needs to be reworked so class keeps track of shader stage create infos
 void Renderer::createGraphicsPipeline() {
-    shaders.compileShaders(true);
+    if(shadersCompiled == false) {
+        shaders.compileShaders(true);
+        shadersCompiled = true;
+    }
+    
     rendererLogger->debug("Creating shader module: {}", "shaders.frag");
     VkShaderModule fragShaderModule = createShaderModule(shaders.getSpirvModules("shaders.frag"));
 
@@ -502,13 +510,15 @@ void Renderer::createSyncObjects() {
 }
 
 void Renderer::recreateSwapChain() {
-    // int width = 0, height = 0;
-    // while (width == 0 || height == 0) {
-    //     glfwGetFramebufferSize(window, &width, &height);
-    //     glfwWaitEvents();
-    // }
+    int width = 0, height = 0;
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(_window, &width, &height);
+        glfwWaitEvents();
+    }
 
     vkDeviceWaitIdle(device);
+
+    cleanupSwapChain();
 
     createSwapChain();
     createImageViews();
@@ -516,6 +526,7 @@ void Renderer::recreateSwapChain() {
     createGraphicsPipeline();
     createFrameBuffers();
     createCommandBuffers();
+    rendererLogger->debug("Recreated swap chain");
 }
 
 VkShaderModule Renderer::createShaderModule(std::vector<uint32_t> const& code) {
@@ -856,6 +867,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Renderer::debugCallback(VkDebugUtilsMessageSeveri
                                                         void *pUserData) {
     static_cast<spdlog::logger *>(pUserData)->debug("Validation layer: {}", pCallbackData->pMessage);
     return VK_FALSE;
+}
+
+void Renderer::frameBufferResizeCallback(GLFWwindow* window, int width, int height) {
+    auto app = reinterpret_cast<zero::Renderer*>(glfwGetWindowUserPointer(window));
+    app->setFrameBufferResize(true);
 }
 
 }

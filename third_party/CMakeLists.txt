@@ -1,6 +1,5 @@
 include(FetchContent)
 
-
 # ------------------------------------------------------------------------------
 # A multi-platform library for OpenGL, OpenGL ES, Vulkan, window and
 # input http://www.glfw.org/
@@ -62,6 +61,7 @@ FetchContent_GetProperties(glm)
 
 if(NOT glm_POPULATED)
     FetchContent_Populate(glm)
+    set(GLM_TEST_ENABLE OFF CACHE BOOL "")
     set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "")
 
     add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
@@ -75,7 +75,7 @@ message(STATUS "GLM finished downloading")
 # Modern json parser for c++ https://nlohmann.github.io/json/
 FetchContent_Declare(json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.6.1
+    GIT_TAG v3.7.0
     GIT_PROGRESS true
 )
 

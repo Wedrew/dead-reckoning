@@ -1,5 +1,6 @@
 find_package(Python3 COMPONENTS Interpreter)
-#set(ENABLE_OPT)
+set(SKIP_GLSLANG_INSTALL OFF CACHE BOOL "")
+set(LIB_TYPE STATIC CACHE STRING "")
 
 set(GLSLANG_NAME glslang)
 set(GLSLANG_VERSION 7.12.3352)

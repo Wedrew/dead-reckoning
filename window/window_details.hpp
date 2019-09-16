@@ -5,6 +5,7 @@
 #include <string>
 
 #define VULKAN_ENABLE_LUNARG_VALIDATION
+#define GLFW_INCLUDE_VULKAN
 
 #include "GLFW/glfw3.h"
 

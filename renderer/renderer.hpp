@@ -1,13 +1,14 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#define VULKAN_ENABLE_LUNARG_VALIDATION
-
 #include <string>
 #include <optional>
 #include <vector>
 
-#include "vulkan/vulkan.h"
+
+#define VULKAN_ENABLE_LUNARG_VALIDATION
+#define GLFW_INCLUDE_VULKAN
+
 #include "GLFW/glfw3.h"
 #include "utils/utils.hpp"
 #include "window/window_details.hpp"
@@ -48,12 +49,28 @@ protected:
     void drawFrame();
     void waitDeviceIdle();
     void setFrameBufferResize(bool wasResized) {frameBufferResized = wasResized;};
+    static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
-    const int maxFramesInFlight = 2;
+    int const maxFramesInFlight = 2;
     bool frameBufferResized = false;
+    bool shadersCompiled = false;
     size_t currentFrame = 0;
+    struct Vertex {
+        glm::vec2 pos;
+        glm::vec3 color;
 
+        static VkVertexInputBindingDescription getBindingDescription() {
+            VkVertexInputBindingDescription bindingDescription = {};
+        }
+    };
+    const std::vector<Vertex> vertices = {
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+
+    GLFWwindow *_window;
     VkDevice device;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
@@ -80,6 +97,7 @@ private:
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStageCreateInfos;
 
     AssetsManager shaders = AssetsManager();
 

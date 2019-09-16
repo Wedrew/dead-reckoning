@@ -26,7 +26,7 @@ namespace zero {
 
 class Game final : public Window {
 public:
-    Game(std::string title, uint flags);
+    Game(std::string title, int flags);
     ~Game();
 
     void updateEvents();
