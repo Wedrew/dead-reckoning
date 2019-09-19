@@ -1,5 +1,6 @@
 include(FetchContent)
 
+
 # ------------------------------------------------------------------------------
 # A multi-platform library for OpenGL, OpenGL ES, Vulkan, window and
 # input http://www.glfw.org/
@@ -13,7 +14,7 @@ FetchContent_GetProperties(glfw)
 
 if(NOT glfw_POPULATED)
     FetchContent_Populate(glfw)
-    #set(GLFW_VULKAN_STATIC ON CACHE BOOL "")
+    set(GLFW_VULKAN_STATIC ON CACHE BOOL "")
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
@@ -21,7 +22,7 @@ if(NOT glfw_POPULATED)
     add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
 endif()
 
-message(STATUS "GLFW finished downloading")
+message(STATUS "GLFW was downloaded and configured")
 # ------------------------------------------------------------------------------
 
 
@@ -44,7 +45,7 @@ if(NOT spdlog_POPULATED)
     add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
 endif()
 
-message(STATUS "spdlog finished downloading")
+message(STATUS "spdlog was downloaded and configured")
 # -------------------------------------------------------------------------------
 
 
@@ -63,33 +64,37 @@ if(NOT glm_POPULATED)
     FetchContent_Populate(glm)
     set(GLM_TEST_ENABLE OFF CACHE BOOL "")
     set(GLM_TEST_ENABLE_CXX_17 ON CACHE BOOL "")
+    set(GLM_INSTALL_ENABLE OFF CACHE BOOL "")
+    set(GLM_TEST_ENABLE_FAST_MATH ON CACHE BOOL "")
+    set(GLM_QUIET ON CACHE BOOL "")
 
     add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
 endif()
 
-message(STATUS "GLM finished downloading")
+message(STATUS "GLM was downloaded and configured")
 # -------------------------------------------------------------------------------
 
 
 # ------------------------------------------------------------------------------
-# Modern json parser for c++ https://nlohmann.github.io/json/
-FetchContent_Declare(json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.7.0
+# json11 is a tiny JSON library for C++11, providing JSON parsing and
+# serialization.
+FetchContent_Declare(json11
+    GIT_REPOSITORY https://github.com/dropbox/json11
+    GIT_TAG master
     GIT_PROGRESS true
 )
 
-FetchContent_GetProperties(json)
+FetchContent_GetProperties(json11)
 
-if(NOT json_POPULATED)
-    FetchContent_Populate(json)
-    set(JSON_BuildTests OFF CACHE BOOL "")
-    set(JSON_Install OFF CACHE BOOL "")
+if(NOT json11_POPULATED)
+    FetchContent_Populate(json11)
+    set(JSON11_BUILD_TESTS OFF CACHE BOOL "")
+    set(JSON11_ENABLE_DR1467_CANARY OFF CACHE BOOL "")
 
-    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR})
+    add_subdirectory(${json11_SOURCE_DIR} ${json11_BINARY_DIR})
 endif()
 
-message(STATUS "Nlohmann json finished downloading")
+message(STATUS "json11 was downloaded and configured")
 # -------------------------------------------------------------------------------
 
 
@@ -110,7 +115,7 @@ if(NOT cxxopts_POPULATED)
     add_subdirectory(${cxxopts_SOURCE_DIR} ${cxxopts_BINARY_DIR})
 endif()
 
-message(STATUS "cxxopts finished downloading")
+message(STATUS "cxxopts was downloaded and configured")
 # -------------------------------------------------------------------------------
 
-FetchContent_MakeAvailable(glfw spdlog glm json cxxopts)
+FetchContent_MakeAvailable(glfw spdlog glm json11 cxxopts)

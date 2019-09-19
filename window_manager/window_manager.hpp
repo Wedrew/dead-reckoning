@@ -13,28 +13,32 @@
 //! All rights reserved.
 //!***********************************************************/
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef WINDOW_MANAGER_HPP
+#define WINDOW_MANAGER_HPP
 
 #include <vector>
 #include <string>
-
-#define VULKAN_ENABLE_LUNARG_VALIDATION
-#define GLFW_INCLUDE_VULKAN
+#include <memory>
 
 #include "GLFW/glfw3.h"
+#include "window_manager/window_details.hpp"
+#include "renderer.hpp"
 #include "utils/utils.hpp"
-#include "renderer/renderer.hpp"
-#include "assets_manager/assets_manager.hpp"
-#include "window/window_details.hpp"
 
-namespace zero {
+using Callback = std::function<void()>;
 
-class Window : public Renderer {
+namespace Zero {
+
+struct KeyPress {
+    std::vector<bool> pressHistory;
+};
+
+//Rename to window wrapper
+class WindowManager : public Renderer {
 
 public:
-    Window(std::string title, int flags);
-    ~Window();
+    WindowManager(std::string title, int flags);
+    ~WindowManager();
 
 protected:
     std::string title;
@@ -42,14 +46,22 @@ protected:
     void mainLoop();
     void initGLFW();
     void initWindow();
+    void initControllers();
     void getMonitors();
+    void pollControllerInput();
+    void calculateFPS();
+    static void keyCallback(GLFWwindow *_window, int key, int scancode, int action, int mods);
+    static void joyStickCallback(int jid, int event);
 
 private:
+    uint32_t fps;
     std::string windowType = type(this);
-    std::shared_ptr<spdlog::logger> windowLogger = zero::createSpdLogger(windowType, spdlog::level::debug);
+    std::shared_ptr<spdlog::logger> windowLogger = Zero::createSpdLogger(windowType, spdlog::level::debug);
+    std::map<int, KeyPress> keyPresses;
     std::vector<MonitorDetails> monitors;
     MonitorDetails *currentMonitor;
     GLFWwindow *window;
+    GLFWgamepadstate state;
 
 };
 }

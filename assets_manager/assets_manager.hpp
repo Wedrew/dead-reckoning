@@ -1,5 +1,5 @@
-#ifndef ASSETS_MANAGER_H
-#define ASSETS_MANAGER_H
+#ifndef ASSETS_MANAGER_HPP
+#define ASSETS_MANAGER_HPP
 
 #include <string>
 #include <filesystem>
@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 using FileMap = std::map<fs::path, std::string>;
 using SpirVMap = std::map<std::string, std::vector<uint32_t>>;
 
-namespace zero {
+namespace Zero {
 
 class AssetsManager {
 public:
@@ -24,7 +24,7 @@ public:
     //std::string getAsset(std::string name) const {return assets.at(name);};
     void compileShaders(bool optimize);
     void refreshFiles();
-    bool areShadersCompiled() {return shadersDone;};
+    bool areShadersCompiled() {return shadersCompiled;};
 
     // Back class with iteration directorly for range based for loops
     SpirVMap::iterator begin() {return spirVModules.begin();};
@@ -33,7 +33,7 @@ public:
     //FileMap const &getAssets() {return assets;};
 
 protected:
-    bool shadersDone = false;
+    bool shadersCompiled = false;
     fs::path const rootDir = fs::current_path();
     fs::path const assetsDir = fs::current_path().append("assets");
     std::map<fs::path, std::string> fontsFileMap, imagesFileMap, shadersFileMap;
@@ -41,7 +41,7 @@ protected:
 
 private:
     std::string assetType = type(this);
-    std::shared_ptr<spdlog::logger> assetsLogger = zero::createSpdLogger(assetType, spdlog::level::debug);
+    std::shared_ptr<spdlog::logger> assetsLogger = Zero::createSpdLogger(assetType, spdlog::level::debug);
 
     EShLanguage getShaderStage(std::string const &stage);
     void compileGLSL(fs::path const& file, std::string const& fileString);

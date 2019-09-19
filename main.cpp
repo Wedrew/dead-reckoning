@@ -15,24 +15,22 @@
 
 #include "game/game.hpp"
 #include "utils/utils.hpp"
-//#include "nlohmann/json.hpp"
+#include "json11.hpp"
 #include "cxxopts.hpp"
 
 #ifdef NDEBUG
-    const bool zero::Renderer::enableValidationLayers = false;
+    const bool Zero::Renderer::enableValidationLayers = false;
 #else
-    const bool zero::Renderer::enableValidationLayers = true;
+    const bool Zero::Renderer::enableValidationLayers = true;
 #endif
 
 const std::string gameName = "Zero";
 
 int main(int argc, char* argv[]) {
-    auto consoleSink = zero::createSpdSink(gameName, spdlog::level::debug);
-    auto mainLogger = zero::createSpdLogger("main", spdlog::level::debug);;
-    spdlog::register_logger(mainLogger);
+    auto mainLogger = Zero::createSpdLogger("main", spdlog::level::debug);;
 
     mainLogger->debug("Creating {} object", gameName);
-    auto game = zero::Game(gameName, 0);
+    auto game = Zero::Game(gameName, 0);
 
     mainLogger->debug("Exiting from main");
     return 0;

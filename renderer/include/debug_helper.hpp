@@ -1,12 +1,9 @@
-#ifndef RENDERER_HELPER_H
-#define RENDERER_HELPER_H
+#ifndef RENDERER_HELPER_HPP
+#define RENDERER_HELPER_HPP
 
-#define VULKAN_ENABLE_LUNARG_VALIDATION
-#define GLFW_INCLUDE_VULKAN
+#include "vulkan/vulkan.h"
 
-#include <GLFW/glfw3.h>
-
-namespace zero {
+namespace Zero {
 
 VkResult createDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT const *pCreateInfo, VkAllocationCallbacks const *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");

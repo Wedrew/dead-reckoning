@@ -1,8 +1,8 @@
-#include "game.hpp"
+#include "game/game.hpp"
 
-namespace zero {
+namespace Zero {
 
-Game::Game(std::string title, int flags) : Window(title, flags) {
+Game::Game(std::string title, int flags) : WindowManager(title, flags) {
     gameLogger->debug("Created Game object");
     
     run();

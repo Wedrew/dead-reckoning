@@ -1,5 +1,9 @@
 find_package(Python3 COMPONENTS Interpreter)
 set(SKIP_GLSLANG_INSTALL OFF CACHE BOOL "")
+set(ENABLE_GLSLANG_WEB OFF CACHE BOOL "")
+set(BUILD_TESTING OFF CACHE BOOL "")
+set(ENABLE_OPT ON CACHE BOOL "")
+set(INSTALL_GTEST OFF CACHE BOOL "")
 set(LIB_TYPE STATIC CACHE STRING "")
 
 set(GLSLANG_NAME glslang)
@@ -29,7 +33,9 @@ if(NOT EXISTS ${GLSLANG_EXTRACT_PATH}/${GLSLANG_NAME}-${GLSLANG_VERSION})
     message(STATUS "Updating glslang git dependencies")
     execute_process(COMMAND ${Python3_EXECUTABLE} update_glslang_sources.py
         WORKING_DIRECTORY ${GLSLANG_EXTRACT_PATH}/${GLSLANG_NAME}-${GLSLANG_VERSION}
-        RESULT_VARIABLE GLSLANG_UPDATE_SUCCESS)
+        RESULT_VARIABLE GLSLANG_UPDATE_SUCCESS
+        OUTPUT_QUIET
+        ERROR_QUIET)
 
     if(GLSLANG_UPDATE_SUCCESS EQUAL "1")
         message(FATAL_ERROR "Failed to update glslang dependencies")

@@ -13,18 +13,17 @@
 //! All rights reserved.
 //!***********************************************************/
 
-#ifndef GAME_H
-#define GAME_H
+#ifndef GAME_HPP
+#define GAME_HPP
 
 #include <string>
 #include <vector>
 
-#include "window/window.hpp"
-#include "utils/utils.hpp"
+#include "window_manager/window_manager.hpp"
 
-namespace zero {
+namespace Zero {
 
-class Game final : public Window {
+class Game final : public WindowManager {
 public:
     Game(std::string title, int flags);
     ~Game();
@@ -39,7 +38,7 @@ public:
 
 private:
     std::string gameType = type(this);
-    std::shared_ptr<spdlog::logger> gameLogger = zero::createSpdLogger(gameType, spdlog::level::debug);
+    std::shared_ptr<spdlog::logger> gameLogger = Zero::createSpdLogger(gameType, spdlog::level::debug);
 };
 }
 

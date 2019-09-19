@@ -2,13 +2,13 @@
 #include <iterator>
 #include <string_view>
 
-#include "assets_manager.hpp"
+#include "assets_manager/assets_manager.hpp"
 #include "StandAlone/DirStackFileIncluder.h"
 #include "StandAlone/ResourceLimits.h"
 
 namespace fs = std::filesystem;
 
-namespace zero {
+namespace Zero {
 
 AssetsManager::AssetsManager() {
     glslang::InitializeProcess();
@@ -128,7 +128,7 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
 
     spirVModules.insert(std::pair<std::string, std::vector<uint32_t>>(file.filename().string(), spirV));
     assetsLogger->debug("Stored SpirV module {}", file.filename().string());
-    shadersDone = true;
+    shadersCompiled = true;
 }
 
 EShLanguage AssetsManager::getShaderStage(std::string const &stage) {

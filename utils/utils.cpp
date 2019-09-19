@@ -1,7 +1,7 @@
 #include <optional>
 #include "utils.hpp"
 
-namespace zero {
+namespace Zero {
 
 #ifdef __GNUG__
 #include <cstdlib>
@@ -28,11 +28,16 @@ std::string demangle(char const* name) {
 #endif
 
 std::shared_ptr<spdlog::logger> createSpdLogger(std::string subsystemName, spdlog::level::level_enum level) {
-    //static std::optional<bool> firstLogger;
+    static bool firstLogger = true;
     auto &sinks = spdlog::default_logger()->sinks();
     auto logger = std::make_shared<spdlog::logger>(subsystemName, sinks.begin(), sinks.end());
     logger->set_level(level);
 
+    if(firstLogger) {
+        auto consoleSink = Zero::createSpdSink(subsystemName, spdlog::level::debug);
+        firstLogger = false;
+        spdlog::register_logger(logger);
+    }
     return logger;
 }
 

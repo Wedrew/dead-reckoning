@@ -7,7 +7,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-namespace zero {
+namespace Zero {
 
 std::string demangle(char const* name);
 

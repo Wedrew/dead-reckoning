@@ -1,5 +1,5 @@
-#ifndef VERLET_H
-#define VERLET_H
+#ifndef VERLET_HPP
+#define VERLET_HPP
 
 
 namespace zero {
