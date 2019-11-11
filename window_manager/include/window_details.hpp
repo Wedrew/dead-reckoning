@@ -7,7 +7,7 @@ namespace Zero {
 struct MonitorDetails {
     GLFWmonitor *monitor;
     std::vector<GLFWvidmode const*> modes;
-    uint8_t currentMode;
+    uint32_t currentMode;
     std::string monitorName;
 };
 }

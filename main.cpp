@@ -13,25 +13,18 @@
 //! All rights reserved.
 //!***********************************************************/
 
-#include "game/game.hpp"
-#include "utils/utils.hpp"
-#include "json11.hpp"
 #include "cxxopts.hpp"
+#include "nlohmann/json.hpp"
 
-#ifdef NDEBUG
-    const bool Zero::Renderer::enableValidationLayers = false;
-#else
-    const bool Zero::Renderer::enableValidationLayers = true;
-#endif
-
-const std::string gameName = "Zero";
+#include "game.hpp"
+#include "utils.hpp"
+#include "config.hpp"
 
 int main(int argc, char* argv[]) {
-    auto mainLogger = Zero::createSpdLogger("main", spdlog::level::debug);;
+    auto mainLogger = Zero::createSpdLogger("main", spdlog::level::debug);
 
-    mainLogger->debug("Creating {} object", gameName);
-    auto game = Zero::Game(gameName, 0);
+    mainLogger->debug("Creating game object");
+    auto game = Zero::Game(0);
 
-    mainLogger->debug("Exiting from main");
     return 0;
 }

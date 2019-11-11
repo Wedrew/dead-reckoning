@@ -19,13 +19,13 @@
 #include <string>
 #include <vector>
 
-#include "window_manager/window_manager.hpp"
+#include "window_manager.hpp"
 
 namespace Zero {
 
 class Game final : public WindowManager {
 public:
-    Game(std::string title, int flags);
+    Game(int flags);
     ~Game();
 
     void updateEvents();

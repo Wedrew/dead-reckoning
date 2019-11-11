@@ -1,0 +1,26 @@
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
+
+#include <string>
+
+namespace Zero {
+    
+    /*
+    * These values are automatically set according to their cmake variables.
+    */
+
+    std::string const BUILD_VERSION = "@BUILDVERSION@_@RELEASE_TYPE@_@PROJECT_VERSION@";
+    std::string const GAME_NAME = "@GAME_NAME@";
+    std::string const ENGINE_NAME = "@ENGINE_NAME@";
+    std::string const WINDOW_NAME = "@WINDOW_NAME@";
+    std::string const LOG_FILE = "@LOG_FOLDER@/@BUILDVERSION@_@RELEASE_TYPE@@LOG_EXTENSION@";
+
+    bool const ENABLE_VALIDATION_LAYERS = @ENABLE_VALIDATION_LAYERS@;
+
+    //#define BUILDVERSION 
+    /* #undef HAVE_FEATURE_B */
+    /* #undef HAVE_FEATURE_BITS */
+
+}
+
+#endif

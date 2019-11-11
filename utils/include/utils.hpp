@@ -3,9 +3,12 @@
 
 #include <string>
 #include <typeinfo>
+#include <memory>
 
 #include "spdlog/spdlog.h"
+#include "spdlog/async.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 namespace Zero {
 
@@ -16,10 +19,7 @@ std::string type(const T& t) {
     return demangle(typeid(t).name());
 }
 
-// Add ability set log level via parameter spdlog::level::level_enum
 std::shared_ptr<spdlog::logger> createSpdLogger(std::string subsystemName, spdlog::level::level_enum level);
-
-std::shared_ptr<spdlog::sinks::stdout_color_sink_st> createSpdSink(std::string subsystemName, spdlog::level::level_enum level);
 
 }
 

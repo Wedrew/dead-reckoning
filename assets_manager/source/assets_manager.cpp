@@ -1,10 +1,29 @@
+//!**********************************************************
+//! @file   assets_manager.hpp
+//!
+//! @author Andrew Pagan <apagan289@gmail.com>
+//!
+//! @date   June 2019
+//!
+//! @brief  Collects all the assets inside of the asset folder
+//!         from the build directory and stores them for later
+//!         use. This class is NOT thread safe.
+//!
+//! Copyright 2019-2020 Harmonics Inc
+//! All rights reserved.
+//!***********************************************************/
+
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <fstream>
 #include <iterator>
 #include <string_view>
+#include <algorithm>
 
-#include "assets_manager/assets_manager.hpp"
 #include "StandAlone/DirStackFileIncluder.h"
 #include "StandAlone/ResourceLimits.h"
+
+#include "assets_manager.hpp"
 
 namespace fs = std::filesystem;
 
@@ -13,10 +32,24 @@ namespace Zero {
 AssetsManager::AssetsManager() {
     glslang::InitializeProcess();
     recursivelyAcquire(assetsDir);
+    compileShaders();
+    setImageData();
+};
+
+std::shared_ptr<AssetsManager> AssetsManager::getAssetsManager() {
+    static std::weak_ptr<AssetsManager> instance;
+
+    if(auto inst = instance.lock()) {
+        return inst;
+    }
+
+    auto inst = std::shared_ptr<AssetsManager>(new AssetsManager());
+    instance = inst;
+    return inst;
 }
 
+
 void AssetsManager::recursivelyAcquire(fs::path const &path) {
-    // Get all the files in the assets directory
     if(fs::exists(path) and fs::is_directory(path)) {
         assetsLogger->info("Found assets folder at {}", assetsDir.string());
         for(auto const &file: fs::recursive_directory_iterator(path)) {
@@ -26,14 +59,20 @@ void AssetsManager::recursivelyAcquire(fs::path const &path) {
                 std::string fileContents((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
 
                 if(file.path().parent_path().filename() == "fonts") {
-                    fontsFileMap.insert(std::pair<fs::path, std::string>(file, fileContents));
+                    fontsFileMap.insert(std::make_pair(file, fileContents));
                     assetsLogger->info("Stored font {}", file.path().filename().string());
-                } else if(file.path().parent_path().filename() == "images") {
-                    imagesFileMap.insert(std::pair<fs::path, std::string>(file, fileContents));
-                    assetsLogger->info("Stored image {}", file.path().filename().string());
+                } else if(file.path().parent_path().filename() == "textures") {
+                    imagesFileMap.insert(std::make_pair(file, fileContents));
+                    assetsLogger->info("Stored texture {}", file.path().filename().string());
                 } else if(file.path().parent_path().filename() == "shaders") {
-                    shadersFileMap.insert(std::pair<fs::path, std::string>(file, fileContents));
+                    shadersFileMap.insert(std::make_pair(file, fileContents));
                     assetsLogger->info("Stored shader {}", file.path().filename().string());
+                } else if(file.path().parent_path().filename() == "models") {
+                    tinyObjFileMap.insert(std::make_pair(file.path().stem().string(), file.path().string()));
+                    assetsLogger->info("Stored model {}", file.path().filename().string());
+                } else if(file.path().parent_path().filename() == "gltf_bin") {
+                    gltfFileMap.insert(std::make_pair(file.path().stem().string(), file.path().string()));
+                    assetsLogger->info("Stored gltf {}", file.path().filename().string());
                 }
             }
         }
@@ -44,22 +83,39 @@ void AssetsManager::refreshFiles() {
     fontsFileMap.clear();
     imagesFileMap.clear();
     shadersFileMap.clear();
+    tinyObjFileMap.clear();
     recursivelyAcquire(assetsDir);
+    compileShaders();
+    setImageData();
 }
 
-void AssetsManager::compileShaders(bool optimize) {
-    // First preprocess and parse
+void AssetsManager::compileShaders() {
     for(auto const &file : shadersFileMap) {
         compileGLSL(file.first, file.second);
     }
+}
 
-    // // Next compile the shader
-    // for(auto shader : glslangShaders) {
-    //     program.addShader(shader);
-    // }
+void AssetsManager::setImageData() {
+    for(auto const &file : imagesFileMap) {
+        std::string extension = file.first.extension().string();
 
+        if(std::find(imageTypes.begin(), imageTypes.end(), extension) not_eq imageTypes.end()) {
+            int width, height, channels;
 
+            unsigned char *pixels = stbi_load(file.first.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
+            ImageDescription imageDescription = ImageDescription(pixels, static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(4));
 
+            if(not pixels) {
+                assetsLogger->info("Failed to load texture image: {}", file.first.filename().string());
+                throw std::runtime_error("Failed to load texture image!");
+            } else {
+                imageData.insert(std::make_pair(file.first.stem().string(), imageDescription));
+                assetsLogger->info("Loaded texture image: {}", file.first.filename().string());
+            }
+        } else {
+            assetsLogger->warn("Found an unsupported image file type: {}", file.first.filename().string());
+        }
+    }
 }
 
 void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileString) {
@@ -69,7 +125,7 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
     shader.setStrings(&inputCString, 1);
 
     int clientInputSemanticsVersion = 100; // maps to, say, #define VULKAN 100
-    glslang::EShTargetClientVersion vulkanClientVersion = glslang::EShTargetOpenGL_450;
+    glslang::EShTargetClientVersion vulkanClientVersion = glslang::EShTargetVulkan_1_0;
     glslang::EShTargetLanguageVersion targetVersion = glslang::EShTargetSpv_1_0;
 
     shader.setEnvInput(glslang::EShSourceGlsl, shaderType, glslang::EShClientVulkan, clientInputSemanticsVersion);
@@ -86,12 +142,12 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
     std::string preprocessedGLSL;
 
     if(not shader.preprocess(&resources, defaultVersion, ENoProfile, false, false, messages, &preprocessedGLSL, includer)) {
-        assetsLogger->error("GLSL preprocessing failed for: {}", file.string());
+        assetsLogger->error("GLSL preprocessing failed for: {}", file.filename().string());
         assetsLogger->error("shader.getInfoLog(): {}", shader.getInfoLog());
         assetsLogger->error("shader.getInfoDebugLog(): {}", shader.getInfoDebugLog());
         throw std::runtime_error("GLSL preprocessing failed");
     } else {
-        assetsLogger->debug("GLSL preprocessing succeeded for: {}", file.string());
+        assetsLogger->debug("GLSL preprocessing succeeded for: {}", file.filename().string());
     }
 
     const char *preprocessedCStr = preprocessedGLSL.c_str();
@@ -99,12 +155,12 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
     glslang::TProgram program;
 
     if(not shader.parse(&resources, defaultVersion, false, messages)) {
-        assetsLogger->error("GLSL parsing failed for: {}", file.string());
+        assetsLogger->error("GLSL parsing failed for: {}", file.filename().string());
         assetsLogger->error("shader.getInfoLog(): {}", shader.getInfoLog());
         assetsLogger->error("shader.getInfoDebugLog(): {}", shader.getInfoDebugLog());
         throw std::runtime_error("GLSL parsing failed");
     } else {
-        assetsLogger->debug("GLSL parsing succeeded for: {}", file.string());
+        assetsLogger->debug("GLSL parsing succeeded for: {}", file.filename().string());
         program.addShader(&shader);
     }
 
@@ -114,7 +170,7 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
         assetsLogger->error("shader.getInfoDebugLog(): {}", shader.getInfoDebugLog());
         throw std::runtime_error("GLSL parsing failed");
     } else {
-        assetsLogger->debug("GLSL linking succeeded for: {}", file.string());
+        assetsLogger->debug("GLSL linking succeeded for: {}", file.filename().string());
     }
 
     std::vector<uint32_t> spirV;
@@ -126,9 +182,8 @@ void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileStr
         assetsLogger->debug("Spv logger says: {}", logger.getAllMessages());
     }
 
-    spirVModules.insert(std::pair<std::string, std::vector<uint32_t>>(file.filename().string(), spirV));
-    assetsLogger->debug("Stored SpirV module {}", file.filename().string());
-    shadersCompiled = true;
+    spirVModules.insert(std::make_pair(file.filename().string(), spirV));
+    assetsLogger->debug("Stored SpirV module: {}", file.filename().string());
 }
 
 EShLanguage AssetsManager::getShaderStage(std::string const &stage) {
@@ -149,5 +204,6 @@ EShLanguage AssetsManager::getShaderStage(std::string const &stage) {
         return EShLangCount;
     }
 }
+
 
 }

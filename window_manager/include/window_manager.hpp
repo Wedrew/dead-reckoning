@@ -21,47 +21,49 @@
 #include <memory>
 
 #include "GLFW/glfw3.h"
-#include "window_manager/window_details.hpp"
+
+#include "config.hpp"
+#include "assets_manager.hpp"
+#include "window_details.hpp"
 #include "renderer.hpp"
-#include "utils/utils.hpp"
+#include "utils.hpp"
 
 using Callback = std::function<void()>;
 
 namespace Zero {
 
-struct KeyPress {
-    std::vector<bool> pressHistory;
-};
-
-//Rename to window wrapper
 class WindowManager : public Renderer {
 
 public:
-    WindowManager(std::string title, int flags);
+    WindowManager(int flags);
     ~WindowManager();
 
 protected:
-    std::string title;
-
     void mainLoop();
     void initGLFW();
     void initWindow();
     void initControllers();
     void getMonitors();
     void pollControllerInput();
-    void calculateFPS();
+    void createWindowIcon();
+    void setFrameBufferResize(bool wasResized) {frameBufferResized = wasResized;};
+    static void characterCallback(GLFWwindow *window, unsigned int codepoint);
+    static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+    static void scrollCallback(GLFWwindow *window, double xOffset, double yOffset);
+    static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
     static void keyCallback(GLFWwindow *_window, int key, int scancode, int action, int mods);
     static void joyStickCallback(int jid, int event);
+    static void cursorPositionCallback(GLFWwindow *window, double xPos, double yPos);
 
 private:
-    uint32_t fps;
     std::string windowType = type(this);
+    std::shared_ptr<AssetsManager> assets = AssetsManager::getAssetsManager();
     std::shared_ptr<spdlog::logger> windowLogger = Zero::createSpdLogger(windowType, spdlog::level::debug);
-    std::map<int, KeyPress> keyPresses;
     std::vector<MonitorDetails> monitors;
     MonitorDetails *currentMonitor;
     GLFWwindow *window;
     GLFWgamepadstate state;
+    GLFWimage icons[1];
 
 };
 }
