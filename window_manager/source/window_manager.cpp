@@ -12,7 +12,7 @@ WindowManager::WindowManager(int flags) : Renderer() {
     initGLFW();
     initControllers();
     getMonitors();
-    createWindowIcon();
+    //createWindowIcon();
     initWindow();
     initVulkan(window);
 }

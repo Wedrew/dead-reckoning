@@ -104,7 +104,7 @@ private:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
     MonitorDetails *currentMonitor;
-    GameObject house = GameObject("chalet");
+    GameObject house = GameObject("engine.glb");
     std::string rendererType = type(this);
     std::string title = Zero::GAME_NAME;
     std::string engineName = Zero::ENGINE_NAME;

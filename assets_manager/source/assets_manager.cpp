@@ -58,70 +58,56 @@ void AssetsManager::recursivelyAcquire(fs::path const &path) {
                 std::ifstream fileStream(file.path().string(), std::ios::binary);
                 std::string fileContents((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
 
-                if(file.path().parent_path().filename() == "fonts") {
-                    fontsFileMap.insert(std::make_pair(file, fileContents));
-                    assetsLogger->info("Stored font {}", file.path().filename().string());
-                } else if(file.path().parent_path().filename() == "textures") {
-                    imagesFileMap.insert(std::make_pair(file, fileContents));
-                    assetsLogger->info("Stored texture {}", file.path().filename().string());
-                } else if(file.path().parent_path().filename() == "shaders") {
-                    shadersFileMap.insert(std::make_pair(file, fileContents));
-                    assetsLogger->info("Stored shader {}", file.path().filename().string());
-                } else if(file.path().parent_path().filename() == "models") {
-                    tinyObjFileMap.insert(std::make_pair(file.path().stem().string(), file.path().string()));
-                    assetsLogger->info("Stored model {}", file.path().filename().string());
-                } else if(file.path().parent_path().filename() == "gltf_bin") {
-                    gltfFileMap.insert(std::make_pair(file.path().stem().string(), file.path().string()));
-                    assetsLogger->info("Stored gltf {}", file.path().filename().string());
-                }
+                files.insert(std::make_pair(file.path().filename().string(), std::make_pair(file, fileContents)));
+                assetsLogger->info("Stored file {}", file.path().filename().string());
             }
         }
     }
 }
 
 void AssetsManager::refreshFiles() {
-    fontsFileMap.clear();
-    imagesFileMap.clear();
-    shadersFileMap.clear();
-    tinyObjFileMap.clear();
     recursivelyAcquire(assetsDir);
     compileShaders();
     setImageData();
 }
 
 void AssetsManager::compileShaders() {
-    for(auto const &file : shadersFileMap) {
-        compileGLSL(file.first, file.second);
-    }
-}
-
-void AssetsManager::setImageData() {
-    for(auto const &file : imagesFileMap) {
-        std::string extension = file.first.extension().string();
-
-        if(std::find(imageTypes.begin(), imageTypes.end(), extension) not_eq imageTypes.end()) {
-            int width, height, channels;
-
-            unsigned char *pixels = stbi_load(file.first.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
-            ImageDescription imageDescription = ImageDescription(pixels, static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(4));
-
-            if(not pixels) {
-                assetsLogger->info("Failed to load texture image: {}", file.first.filename().string());
-                throw std::runtime_error("Failed to load texture image!");
-            } else {
-                imageData.insert(std::make_pair(file.first.stem().string(), imageDescription));
-                assetsLogger->info("Loaded texture image: {}", file.first.filename().string());
+    for(auto const &file : files) {
+        for(auto const &exten : shaderExtensions) {
+            if(file.second.first.filename().extension() == exten) {
+                compileGLSL(file.second.first.filename().string(), file.second.second);
             }
-        } else {
-            assetsLogger->warn("Found an unsupported image file type: {}", file.first.filename().string());
         }
     }
 }
 
-void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileString) {
+void AssetsManager::setImageData() {
+    for(auto const &file : files) {
+        std::string extension = file.second.first.filename().extension().string();
+
+        if(std::find(imageTypes.begin(), imageTypes.end(), extension) != imageTypes.end()) {
+            int width, height, channels;
+
+            unsigned char *pixels = stbi_load(file.second.first.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+            ImageDescription imageDescription = ImageDescription(pixels, static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(4));
+
+            if(not pixels) {
+                assetsLogger->error("Failed to load texture image: {}", file.second.first.filename().string());
+                throw std::runtime_error("Failed to load texture image!");
+            } else {
+                imageData.insert(std::make_pair(file.second.first.stem().string(), imageDescription));
+                assetsLogger->info("Loaded texture image: {}", file.second.first.filename().string());
+            }
+        } else {
+            assetsLogger->warn("Found an unsupported image file type: {}", file.second.first.filename().string());
+        }
+    }
+}
+
+void AssetsManager::compileGLSL(fs::path const& file, std::string const& fileContents) {
     EShLanguage shaderType = getShaderStage(file.extension().string());
     glslang::TShader shader(shaderType);
-    auto inputCString = fileString.c_str();
+    auto inputCString = fileContents.c_str();
     shader.setStrings(&inputCString, 1);
 
     int clientInputSemanticsVersion = 100; // maps to, say, #define VULKAN 100

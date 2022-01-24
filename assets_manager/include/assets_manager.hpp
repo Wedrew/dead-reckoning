@@ -33,44 +33,45 @@
 namespace fs = std::filesystem;
 using FileMap = std::map<fs::path, std::string>;
 using SpirVMap = std::map<std::string, std::vector<uint32_t>>;
+using FileAndContents = std::pair<fs::path, std::string>;
 
 namespace Zero {
 
 class AssetsManager {
 
 public:
+    ~AssetsManager() = default;
+    static std::shared_ptr<AssetsManager> getAssetsManager();
+
+    void refreshFiles();
+    std::string const getPath(std::string const &fileName) {return files.find(fileName)->second.first.string();};
+    std::string const &getContent(std::string const &fileName) {return files.find(fileName)->second.second;};
+
+    std::vector<uint32_t> const &getSpirvModules(std::string const &moduleName) {return spirVModules.find(moduleName)->second;};
+    ImageDescription const &getImageDescription(std::string const &imageName) {return imageData.find(imageName)->second;};
+
+protected:
+    std::map<std::string, FileAndContents> files;
+
+    fs::path const rootDir = fs::current_path();
+    fs::path const assetsDir = fs::current_path().append("assets");
+    std::map<std::string, std::vector<uint32_t>> spirVModules;
+    std::map<std::string, ImageDescription> imageData;
+
+private:
+    AssetsManager();
     AssetsManager(const AssetsManager&) = delete;
     AssetsManager(AssetsManager&&) = delete;
     AssetsManager& operator=(const AssetsManager&) = delete;
     AssetsManager& operator=(AssetsManager&&) = delete;
 
-    static std::shared_ptr<AssetsManager> getAssetsManager();
-
-    void refreshFiles();
-
-    std::vector<uint32_t> const &getSpirvModules(std::string const &moduleName) {return spirVModules.find(moduleName)->second;};
-    std::string const &getTinyObjPath(std::string const &tinyObjName) {return tinyObjFileMap.find(tinyObjName)->second;};
-    std::string const &getGltfDocumentPath(std::string const &gltfPath) {return gltfFileMap.find(gltfPath)->second;};
-    ImageDescription const &getImageDescription(std::string const &imageName) {return imageData.find(imageName)->second;};
-
-protected:
-    fs::path const rootDir = fs::current_path();
-    fs::path const assetsDir = fs::current_path().append("assets");
-    std::map<fs::path, std::string> fontsFileMap, imagesFileMap, shadersFileMap;
-    std::map<std::string, std::string> tinyObjFileMap;
-    std::map<std::string, std::vector<uint32_t>> spirVModules;
-    std::map<std::string, std::string> gltfFileMap;
-    std::map<std::string, ImageDescription> imageData;
-
-private:
-    AssetsManager();
-
     std::string assetType = type(this);
     std::vector<std::string> imageTypes = {".jpg", ".png", ".bmp", ".jpeg"};
+    std::vector<std::string> shaderExtensions = {".vert", ".frag"};
     std::shared_ptr<spdlog::logger> assetsLogger = Zero::createSpdLogger(assetType, spdlog::level::debug);
 
     EShLanguage getShaderStage(std::string const &stage);
-    void compileGLSL(fs::path const& file, std::string const& fileString);
+    void compileGLSL(fs::path const& file, std::string const& fileContents);
     void recursivelyAcquire(fs::path const& path);
     void compileShaders();
     void setImageData();

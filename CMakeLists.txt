@@ -38,7 +38,7 @@ add_subdirectory(controller)
 add_executable(zeroth_order main.cpp)
 
 #  Make binary static and link internal libraries
-target_link_libraries(zeroth_order PUBLIC -static game configure)
+target_link_libraries(zeroth_order PUBLIC game configure)
 
 # Link external libraries
 target_link_libraries(zeroth_order PRIVATE cxxopts nlohmann_json::nlohmann_json)

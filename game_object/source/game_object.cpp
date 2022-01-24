@@ -6,20 +6,22 @@
 
 namespace Zero {
 
-GameObject::GameObject(std::string modelName) : modelName(modelName), modelPath(assets->getTinyObjPath(modelName)) {
+GameObject::GameObject(std::string modelName) : modelName(modelName), modelPath(assets->getPath(modelName)) {
     loadModel();
     //createMesh(vertices, indices);
 }
 
 
 void GameObject::loadModel() {
-	gltfDocument = fx::gltf::LoadFromBinary(assets->getGltfDocumentPath("engine"));
+	gltfDocument = fx::gltf::LoadFromBinary(assets->getPath("engine.glb"));
 	gameObjectLogger->debug("Loaded gltf document: {}", "engine.glb");
 
 	tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
+
+    gameObjectLogger->debug(modelPath);
 
     if(not tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath.c_str())) {
         gameObjectLogger->error("Failed to load object: {}", modelPath);
